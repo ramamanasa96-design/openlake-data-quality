@@ -1,3 +1,5 @@
+import sys
+
 from openlake.profiler import calculate_quality_score
 from openlake.reader import read_dataset
 from openlake.report import generate_html_report
@@ -10,7 +12,12 @@ from openlake.validator import (
 
 
 def main() -> None:
-    df = read_dataset("sample_data/employees.csv")
+    if len(sys.argv) > 1:
+        file_path = sys.argv[1]
+    else:
+        file_path = "sample_data/employees.csv"
+
+    df = read_dataset(file_path)
 
     missing_values = find_missing_values(df)
     duplicate_rows = count_duplicate_rows(df)
