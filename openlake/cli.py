@@ -1,4 +1,6 @@
+from openlake.profiler import calculate_quality_score
 from openlake.reader import read_dataset
+from openlake.report import generate_html_report
 from openlake.validator import (
     count_duplicate_rows,
     find_missing_values,
@@ -23,6 +25,12 @@ def main() -> None:
     }
 
     schema_result = validate_schema(df, expected_schema)
+
+    quality_scores = calculate_quality_score(
+        df=df,
+        duplicate_rows=duplicate_rows,
+        schema_is_valid=schema_result["is_valid"],
+    )
 
     print("=" * 50)
     print("OpenLake Data Quality Report")
@@ -76,6 +84,33 @@ def main() -> None:
                     f"- {column}: expected {mismatch['expected']}, "
                     f"found {mismatch['actual']}"
                 )
+
+    print("\nData Quality Score")
+    print("-" * 30)
+
+    print(f"Overall Score   : {quality_scores['overall_score']} / 100")
+    print(f"Completeness    : {quality_scores['completeness_score']}%")
+    print(f"Uniqueness      : {quality_scores['uniqueness_score']}%")
+    print(f"Schema Validity : {quality_scores['schema_score']}%")
+
+    report_data = {
+        "rows": df.shape[0],
+        "columns": df.shape[1],
+        "duplicate_rows": duplicate_rows,
+        "missing_values": missing_values,
+        "data_types": data_types,
+        "schema_result": schema_result,
+        "quality_scores": quality_scores,
+    }
+
+    report_path = generate_html_report(
+        report_data=report_data,
+        output_path="quality_report.html",
+    )
+
+    print("\nHTML Report")
+    print("-" * 30)
+    print(f"Generated: {report_path}")
 
 
 if __name__ == "__main__":
