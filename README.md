@@ -1,118 +1,333 @@
 # 🚀 OpenLake Data Quality
 
-A lightweight, open-source Python framework for validating, profiling, and reporting data quality issues in CSV, JSON, and Parquet datasets before they enter analytics and ETL pipelines.
+OpenLake Data Quality is a lightweight, open-source Python framework for validating, profiling, and reporting data quality issues before datasets enter analytics, machine learning, or ETL pipelines.
+
+It supports **CSV, JSON, Parquet, and Excel** datasets and generates professional **HTML** and **JSON** reports.
 
 ---
 
-## ✨ Features
+# ✨ Features
 
-- ✅ Read CSV, JSON and Parquet files
+- ✅ Read CSV files
+- ✅ Read JSON files
+- ✅ Read Parquet files
+- ✅ Read Excel (.xlsx/.xls) files
 - ✅ Detect missing values
 - ✅ Detect duplicate rows
 - ✅ Display column data types
-- 🚧 Schema validation (Coming Soon)
-- 🚧 Quality score (Coming Soon)
-- 🚧 HTML reports (Coming Soon)
-- 🚧 AWS S3 support (Coming Soon)
-- 🚧 Databricks integration (Coming Soon)
+- ✅ Schema validation
+- ✅ Column profiling
+- ✅ Numeric outlier detection
+- ✅ Data quality scoring
+- ✅ Interactive HTML report generation
+- ✅ JSON report generation
+- ✅ Command-line interface (CLI)
 
 ---
 
-## 📦 Installation
+# 📦 Installation
+
+Clone the repository:
 
 ```bash
 git clone https://github.com/ramamanasa96-design/openlake-data-quality.git
+```
 
+Move into the project:
+
+```bash
 cd openlake-data-quality
+```
 
+Install dependencies:
+
+```bash
 pip install -r requirements.txt
 ```
 
----
-
-## ▶️ Usage
+or install the package in development mode:
 
 ```bash
-python -m openlake.cli
+pip install -e ".[dev]"
 ```
 
 ---
 
-## Example Output
+# ▶️ Basic Usage
+
+Run OpenLake on a dataset:
+
+```bash
+python -m openlake.cli sample_data/employees.csv
+```
+
+or
+
+```bash
+openlake sample_data/employees.csv
+```
+
+---
+
+# 📄 Generate Custom Reports
+
+```bash
+openlake sample_data/employees.csv \
+    --output reports/employees_report.html \
+    --json-output reports/employees_report.json
+```
+
+PowerShell (single line):
+
+```powershell
+openlake sample_data/employees.csv --output reports/employees_report.html --json-output reports/employees_report.json
+```
+
+---
+
+# 📋 Validate Using a Schema
+
+```bash
+openlake sample_data/employees.csv --schema schema.json
+```
+
+Disable the default schema:
+
+```bash
+openlake sample_data/employees.csv --no-default-schema
+```
+
+---
+
+# 📈 Configure Outlier Detection
+
+Default Z-score threshold:
 
 ```
-OpenLake Data Quality Report
+3.0
+```
 
-Rows       : 6
+Example:
+
+```bash
+openlake sample_data/employees.csv --z-threshold 2.5
+```
+
+---
+
+# 📊 Example Console Output
+
+```
+==================================================
+OpenLake Data Quality Report
+==================================================
+
+Input File : sample_data/employees.csv
+
+Rows       : 10
 Columns    : 5
 Duplicates : 1
 
 Missing Values
-
+------------------------------
 email: 1
 
-department: 1
-
 Data Types
-
+------------------------------
 id : int64
 name : object
 email : object
 department : object
 salary : int64
+
+Outlier Summary
+------------------------------
+salary : 1
+
+Schema Validation
+------------------------------
+Schema Status : PASSED
+
+Data Quality Score
+------------------------------
+Overall Score   : 95.33 / 100
+Completeness    : 98.00%
+Uniqueness      : 90.00%
+Schema Validity : 100.00%
+
+Generated Reports
+------------------------------
+HTML Report : quality_report.html
+JSON Report : quality_report.json
 ```
 
 ---
 
-## 📂 Project Structure
+# 📑 HTML Report
+
+The generated HTML report includes:
+
+- Overall Quality Score
+- Dataset Summary
+- Missing Values
+- Duplicate Summary
+- Quality Score Chart
+- Outlier Summary
+- Data Types
+- Column Profile
+- Schema Validation Results
+
+---
+
+# 📂 Supported File Formats
+
+- CSV
+- JSON
+- Parquet
+- Excel (.xlsx/.xls)
+
+---
+
+# 📂 Project Structure
 
 ```
 openlake-data-quality/
 │
-├── docs/
-├── examples/
 ├── openlake/
-│   ├── reader.py
-│   ├── validator.py
+│   ├── __init__.py
+│   ├── cli.py
 │   ├── profiler.py
+│   ├── reader.py
 │   ├── report.py
-│   └── cli.py
+│   └── validator.py
 │
 ├── sample_data/
+│
 ├── tests/
+│
+├── pyproject.toml
 ├── requirements.txt
-└── README.md
+├── requirements-dev.txt
+├── README.md
+├── LICENSE
+└── .gitignore
 ```
 
 ---
 
-## 🛣️ Roadmap
+# 🧪 Development
 
-- [x] Dataset Reader
-- [x] Missing Value Detection
-- [x] Duplicate Detection
-- [x] Data Type Detection
-- [ ] Schema Validation
-- [ ] Data Profiling
-- [ ] HTML Reports
-- [ ] JSON Reports
-- [ ] CLI Commands
-- [ ] Unit Tests
-- [ ] GitHub Actions
-- [ ] AWS S3 Support
-- [ ] Databricks Integration
-- [ ] PyPI Package
+Install development dependencies:
+
+```bash
+pip install -r requirements-dev.txt
+```
+
+Run tests:
+
+```bash
+pytest
+```
+
+Run Ruff:
+
+```bash
+ruff check .
+```
+
+Build the package:
+
+```bash
+python -m build
+```
 
 ---
 
-## 🤝 Contributing
+# 📈 Data Quality Metrics
+
+OpenLake calculates:
+
+- Completeness Score
+- Uniqueness Score
+- Schema Validation Score
+- Overall Quality Score
+
+The overall score is calculated from the average of these metrics.
+
+---
+
+# 🛣️ Roadmap
+
+## Completed
+
+- ✅ CSV Reader
+- ✅ JSON Reader
+- ✅ Parquet Reader
+- ✅ Excel Reader
+- ✅ Missing Value Detection
+- ✅ Duplicate Detection
+- ✅ Data Type Detection
+- ✅ Schema Validation
+- ✅ Column Profiling
+- ✅ Outlier Detection
+- ✅ HTML Reports
+- ✅ JSON Reports
+- ✅ CLI Support
+
+## Planned
+
+- ⏳ Unit Tests
+- ⏳ GitHub Actions
+- ⏳ PyPI Publishing
+- ⏳ AWS S3 Integration
+- ⏳ Databricks Integration
+- ⏳ Database Connectors
+- ⏳ Data Drift Detection
+- ⏳ Streamlit Dashboard
+- ⏳ PDF Reports
+
+---
+
+# 🤝 Contributing
 
 Contributions are welcome.
 
-Please open an Issue first before submitting a Pull Request.
+1. Fork the repository.
+2. Create a feature branch.
+
+```bash
+git checkout -b feature/new-feature
+```
+
+3. Commit your changes.
+
+```bash
+git commit -m "Add new feature"
+```
+
+4. Push your branch.
+
+```bash
+git push origin feature/new-feature
+```
+
+5. Open a Pull Request.
 
 ---
 
-## 📄 License
+# 📄 License
 
-MIT License
+This project is licensed under the MIT License.
+
+---
+
+# 👨‍💻 Author
+
+**Rama Rayudu Gangumalla**
+
+GitHub:
+https://github.com/ramamanasa96-design
+
+---
+
+⭐ If you found this project useful, consider giving it a star on GitHub.

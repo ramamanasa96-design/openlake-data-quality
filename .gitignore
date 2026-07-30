@@ -102,3 +102,25 @@ coverage.xml
 # Local Development
 # ==========================================================
 .python-version
+
+# Virtual environments
+.venv/
+.venv-1/
+venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Pytest
+.pytest_cache/
+
+# Package metadata
+*.egg-info/
+
+# Generated reports
+*_report.html
+*_report.json
+quality_report.html
+quality_report.json
