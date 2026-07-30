@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Any
 
@@ -226,5 +227,29 @@ def generate_html_report(
 
     report_path = Path(output_path)
     report_path.write_text(html, encoding="utf-8")
+
+    return str(report_path)
+
+
+def generate_json_report(
+    report_data: dict[str, Any],
+    output_path: str = "quality_report.json",
+) -> str:
+    """
+    Generate a JSON data quality report.
+
+    Args:
+        report_data: Dictionary containing validation results and scores.
+        output_path: Path where the JSON report should be saved.
+
+    Returns:
+        The saved report path.
+    """
+    report_path = Path(output_path)
+
+    report_path.write_text(
+        json.dumps(report_data, indent=2),
+        encoding="utf-8",
+    )
 
     return str(report_path)

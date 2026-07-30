@@ -2,7 +2,7 @@ import argparse
 
 from openlake.profiler import calculate_quality_score
 from openlake.reader import read_dataset
-from openlake.report import generate_html_report
+from openlake.report import generate_html_report, generate_json_report
 from openlake.validator import (
     count_duplicate_rows,
     find_missing_values,
@@ -16,7 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
         prog="openlake",
         description=(
             "Validate CSV, JSON, and Parquet datasets and generate "
-            "a data quality report."
+            "data quality reports."
         ),
     )
 
@@ -31,6 +31,12 @@ def build_parser() -> argparse.ArgumentParser:
         "--output",
         default="quality_report.html",
         help="Path for the generated HTML report.",
+    )
+
+    parser.add_argument(
+        "--json-output",
+        default="quality_report.json",
+        help="Path for the generated JSON report.",
     )
 
     return parser
@@ -119,6 +125,7 @@ def main() -> None:
     print(f"Schema Validity : {quality_scores['schema_score']}%")
 
     report_data = {
+        "input_file": args.file_path,
         "rows": df.shape[0],
         "columns": df.shape[1],
         "duplicate_rows": duplicate_rows,
@@ -133,9 +140,18 @@ def main() -> None:
         output_path=args.output,
     )
 
+    json_report_path = generate_json_report(
+        report_data=report_data,
+        output_path=args.json_output,
+    )
+
     print("\nHTML Report")
     print("-" * 30)
     print(f"Generated: {report_path}")
+
+    print("\nJSON Report")
+    print("-" * 30)
+    print(f"Generated: {json_report_path}")
 
 
 if __name__ == "__main__":
