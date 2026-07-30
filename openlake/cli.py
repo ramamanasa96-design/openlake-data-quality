@@ -1,4 +1,4 @@
-import sys
+import argparse
 
 from openlake.profiler import calculate_quality_score
 from openlake.reader import read_dataset
@@ -11,13 +11,36 @@ from openlake.validator import (
 )
 
 
-def main() -> None:
-    if len(sys.argv) > 1:
-        file_path = sys.argv[1]
-    else:
-        file_path = "sample_data/employees.csv"
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="openlake",
+        description=(
+            "Validate CSV, JSON, and Parquet datasets and generate "
+            "a data quality report."
+        ),
+    )
 
-    df = read_dataset(file_path)
+    parser.add_argument(
+        "file_path",
+        nargs="?",
+        default="sample_data/employees.csv",
+        help="Path to a CSV, JSON, or Parquet dataset.",
+    )
+
+    parser.add_argument(
+        "--output",
+        default="quality_report.html",
+        help="Path for the generated HTML report.",
+    )
+
+    return parser
+
+
+def main() -> None:
+    parser = build_parser()
+    args = parser.parse_args()
+
+    df = read_dataset(args.file_path)
 
     missing_values = find_missing_values(df)
     duplicate_rows = count_duplicate_rows(df)
@@ -42,7 +65,7 @@ def main() -> None:
     print("=" * 50)
     print("OpenLake Data Quality Report")
     print("=" * 50)
-
+    print(f"Input File : {args.file_path}")
     print(f"Rows       : {df.shape[0]}")
     print(f"Columns    : {df.shape[1]}")
     print(f"Duplicates : {duplicate_rows}")
@@ -70,23 +93,19 @@ def main() -> None:
     else:
         print("Schema Status: FAILED")
 
-        missing_columns = schema_result["missing_columns"]
-        unexpected_columns = schema_result["unexpected_columns"]
-        type_mismatches = schema_result["type_mismatches"]
-
-        if missing_columns:
+        if schema_result["missing_columns"]:
             print("\nMissing Columns")
-            for column in missing_columns:
+            for column in schema_result["missing_columns"]:
                 print(f"- {column}")
 
-        if unexpected_columns:
+        if schema_result["unexpected_columns"]:
             print("\nUnexpected Columns")
-            for column in unexpected_columns:
+            for column in schema_result["unexpected_columns"]:
                 print(f"- {column}")
 
-        if type_mismatches:
+        if schema_result["type_mismatches"]:
             print("\nType Mismatches")
-            for column, mismatch in type_mismatches.items():
+            for column, mismatch in schema_result["type_mismatches"].items():
                 print(
                     f"- {column}: expected {mismatch['expected']}, "
                     f"found {mismatch['actual']}"
@@ -94,7 +113,6 @@ def main() -> None:
 
     print("\nData Quality Score")
     print("-" * 30)
-
     print(f"Overall Score   : {quality_scores['overall_score']} / 100")
     print(f"Completeness    : {quality_scores['completeness_score']}%")
     print(f"Uniqueness      : {quality_scores['uniqueness_score']}%")
@@ -112,7 +130,7 @@ def main() -> None:
 
     report_path = generate_html_report(
         report_data=report_data,
-        output_path="quality_report.html",
+        output_path=args.output,
     )
 
     print("\nHTML Report")
